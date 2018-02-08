@@ -1,0 +1,46 @@
+int Count=0;
+void setup() {
+  pinMode(4 , OUTPUT);
+  pinMode(1, OUTPUT);
+  pinMode(2, OUTPUT);
+  pinMode(3, OUTPUT);
+  pinMode(0, INPUT);
+}
+void loop() {
+  if(digitalRead(0)== HIGH){  
+  digitalWrite(4,LOW);
+  digitalWrite(1,LOW);
+  digitalWrite(2,LOW);
+  digitalWrite(3,LOW);
+  Count=Count+1;
+      if(Count==7){
+      Count=1;
+      }
+  }//if
+switch (Count){
+  case 1:
+          digitalWrite(4, HIGH);
+          break;
+  case 2:
+          digitalWrite(1, HIGH);
+          break;
+  case 3:
+          digitalWrite(4, HIGH);
+          digitalWrite(1,HIGH);
+          break;
+  case 4:
+          digitalWrite(2, HIGH);
+          digitalWrite(1,HIGH);
+          break;
+  case 5:
+          digitalWrite(1,HIGH);
+          digitalWrite(2,HIGH);
+          digitalWrite(4,HIGH);
+          break;
+  case 6:
+          digitalWrite(1,HIGH);
+          digitalWrite(2,HIGH);
+          digitalWrite(3,HIGH);
+          break;
+}
+}
