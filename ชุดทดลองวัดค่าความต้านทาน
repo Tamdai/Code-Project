@@ -1,0 +1,89 @@
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+const int Pin = A0; 
+int Value = 0;
+float Vin = A1,sumvin; 
+float Vout = 0; 
+float R1 = 10000; 
+float R2 = 0;
+int ledred = 9 ,ledgreen = 8;
+const byte Ohm = B11110100;
+void setup ()
+{
+ 
+lcd.begin(16,2);
+pinMode(ledred,OUTPUT);
+pinMode(ledgreen,OUTPUT);
+}
+void loop ()
+{
+sumvin = analogRead(Vin);
+sumvin = sumvin / 200;
+Value = analogRead(Pin); 
+Vout = (sumvin * Value) / 1023; 
+R2 = R1 * (1 / ((sumvin / Vout) - 1)); 
+if(Vout>=4.6&&Vout<=5.11)
+{
+lcd.setCursor(1,0);
+lcd.print("Please Connect ");
+lcd.setCursor(0,1);
+lcd.print("    Resistor       ");
+digitalWrite(ledred,HIGH);
+digitalWrite(ledgreen,LOW);
+}
+if(R2<1000)
+{
+lcd.clear();
+lcd.setCursor(1,0);
+lcd.print("Resistor is Now");
+lcd.setCursor(1,1);
+lcd.print("= ");
+lcd.print(R2);
+lcd.print(" ");
+lcd.write(Ohm);
+lcd.print(" +-5%");
+delay(1000);
+}
+if(R2>1000&&R2<10000)
+{
+R2 = R2/1000;
+lcd.clear();
+lcd.setCursor(1,0);
+lcd.print("Resistor is Now");
+lcd.setCursor(1,1);
+lcd.print("= ");
+lcd.print(R2);
+lcd.print(" k");
+lcd.write(Ohm);
+lcd.print(" +-5%");
+delay(1000);
+}
+if(R2>10000&&R2<100000)
+{
+R2 = R2/1000;
+lcd.clear();
+lcd.setCursor(1,0);
+lcd.print("Resistor is Now");
+lcd.setCursor(1,1);
+lcd.print("= ");
+lcd.print(R2);
+lcd.print(" k");
+lcd.write(Ohm);
+lcd.print(" +-5%");
+delay(1000);
+}
+if(R2>100000&&R2<1000000)
+{
+R2 = R2/1000;
+lcd.clear();
+lcd.setCursor(1,0);
+lcd.print("Resistor is Now");
+lcd.setCursor(1,1);
+lcd.print("= ");
+lcd.print(R2);
+lcd.print(" k");
+lcd.write(Ohm);
+lcd.print(" +-5%");
+delay(1000);
+}
+}
