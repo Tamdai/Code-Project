@@ -1,0 +1,17 @@
+int led=1;
+int sound=4; 
+void setup(){
+pinMode(led,OUTPUT);
+pinMode(sound,INPUT);
+}
+void loop(){
+    if(digitalRead(sound)==LOW){
+      digitalWrite(led,HIGH);
+      delay(500);
+          while(digitalRead(sound)==HIGH){
+            digitalWrite(led,HIGH);  
+          }
+      digitalWrite(led,LOW);
+      delay(500);
+    }//if   
+}
