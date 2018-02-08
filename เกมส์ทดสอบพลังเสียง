@@ -1,0 +1,130 @@
+ลิ้งที่สำหรับโหลดLiberry lcd_i2c_Attiny85
+https://drive.google.com/file/d/0B8oYWBDcOkWfOUNBeW9oUVh6OVU/view?usp=sharing
+
+#include <EEPROM.h>
+#include <TinyLiquidCrystal_I2C.h>
+#include <TinyWireM.h>// original lib include
+#define MIC  3
+#define BUTTON  4
+// Mic Ture = 0
+LiquidCrystal_I2C lcd(0x3F,16,2);
+bool state = false ;
+int AdHighScore = 1 ;
+int  score = 15 ;
+int  SilentTime = 0 ;
+int  HighScore = 0 ;
+int  End = 0 ;
+int  cls = 0 ;
+void setup()
+{
+  TinyWireM.begin();
+  lcd.init();                  // this is necessary
+  lcd.backlight();
+  lcd.clear();
+  pinMode ( MIC , INPUT ) ;
+  pinMode ( BUTTON , INPUT_PULLUP ) ;
+  EEPROM.get(AdHighScore, HighScore);
+  delay ( 25 ) ;
+  delay ( 2000 ) ;
+}
+void loop()
+{
+  lcd.setCursor ( 0 , 0 ) ;
+  lcd.print("Voice Challenge");
+  
+  if ( digitalRead ( BUTTON ) == 0 ) {
+    SilentTime = 0 ;
+    score = 0 ;
+    End = 50 ;
+    state = true ;
+    clear_HIGHSC ();
+    if ( state == true ) {
+      lcd.setCursor ( 0 , 0 ) ;
+      lcd.print("Ready ?           ");
+      lcd.setCursor ( 6 , 0 ) ;
+      delay ( 1000 ) ;
+      lcd.print("3");
+      delay ( 1000 ) ;
+      lcd.setCursor ( 6 , 0 ) ;
+      lcd.print("2");
+      delay ( 1000 ) ;
+      lcd.setCursor ( 6 , 0 ) ;
+      lcd.print("1");
+      delay ( 1000 ) ;
+      lcd.print("Go");
+    }
+    while ( state == true ) {
+      if ( digitalRead ( MIC ) == 0 ){
+        score += 1 ;
+        SilentTime = 0 ;
+        delay (25);
+      }
+      else {
+        SilentTime = SilentTime + 1 ;
+        if ( SilentTime > 40 ){
+          state = false ;
+        }
+        delay (10);
+      }
+      lcd.setCursor ( 0 , 0 ) ;
+      lcd.print ( "Score : " ) ;
+      lcd.print ( score ) ;
+    }
+    lcd.clear();   
+    lcd.setCursor ( 0 , 0 ) ;
+    lcd.print ( "You Score" ) ;
+    lcd.setCursor ( 0 , 1 ) ;
+    lcd.print ( score ) ;
+    delay (3000);
+    lcd.setCursor ( 0 , 0 ) ;
+    lcd.print ( "High Score" ) ;
+    lcd.setCursor ( 0 , 1 ) ;
+    lcd.print ( HighScore ) ;
+    delay (3000);
+    lcd.clear();
+    if ( score > HighScore && End != 0 ) {
+      EEPROM.put(AdHighScore, score);
+      HighScore = score ;
+      lcd.print ( "    You Win" ) ;
+    }
+    else if ( score < HighScore && End != 0 ) {
+      lcd.print ( "    You Lose" ) ;
+    }
+    while ( End != 0 && state != false ) {
+      lcd.noBacklight();
+      for ( int i = 0 ; i <= End ; i++ ){
+         if (digitalRead ( BUTTON ) == 0 ){
+            End = 0 ;
+         }
+         delay ( 10 ) ;
+      }
+            
+      lcd.backlight();
+      for ( int i = 0 ; i <= End ; i++ ){
+         if (digitalRead ( BUTTON ) == 0 ){
+            End = 0 ;
+         }
+         delay ( 10 ) ;
+      }
+    }
+    delay(1000);
+  }
+  delay ( 100 ) ;
+}
+void clear_HIGHSC () {
+  cls = 0 ;
+  while ( digitalRead ( BUTTON ) == 0 ) {
+      cls = cls + 1 ;
+      delay ( 10 ) ;
+      if ( cls > 300 ) {
+        EEPROM.put(AdHighScore, 0);
+        HighScore = 0 ;
+        lcd.clear ();
+        lcd.print ("RESET HIGHSCORE");
+        delay(2000);
+        state = false ;
+        End = 0 ;
+        break;
+      }
+  }
+}
